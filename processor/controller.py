@@ -80,7 +80,7 @@ class Controller:
         # Cast to tensor
         input_image = transforms.ToTensor()(input_image).to(self.device).unsqueeze(0)
 
-        # Weird chineese preprocessing
+        # Weird for me preprocessing
         input_image = -1 + 2 * input_image
 
         # Processing
@@ -98,34 +98,35 @@ class Controller:
         self.processing_thread.join()
 
 
-
-
 if __name__ == '__main__':
-    in_fld = '/home/objlomob/Documents/all_projects/py_projects/CartoonGan_unoficial_inferenceOnly/data/japan'
+    in_fld = 'folder_with_images_blush'
     import os
 
-    contr = Controller(async=True)
-    # for name in os.listdir(in_fld):
-        # img = cv2.imread(os.path.join(in_fld, name))
-        # res_img = contr.process_image(img)
-        # cv2.imshow('r', res_img)
-        # cv2.waitKey(0)
-    for name in os.listdir(in_fld):
-        img = cv2.imread(os.path.join(in_fld, name))
-        contr.set_async_req(name, img)
-
-
-    met_names = list()
-    while True:
+    async = True
+    contr = Controller(async=async)
+    if async:
         for name in os.listdir(in_fld):
-            if name not in met_names:
-                resp = contr.get_asyc_resp(name)
-                if resp is not None:
-                    met_names.append(name) 
-                    cv2.imshow('r', resp)
-                    cv2.waitKey(0)
-                else:
-                    print('no upds')
-                    sleep(0.1)
+            img = cv2.imread(os.path.join(in_fld, name))
+            contr.set_async_req(name, img)
+
+
+        met_names = list()
+        while True:
+            for name in os.listdir(in_fld):
+                if name not in met_names:
+                    resp = contr.get_asyc_resp(name)
+                    if resp is not None:
+                        met_names.append(name) 
+                        cv2.imshow('r', resp)
+                        cv2.waitKey(0)
+                    else:
+                        print('no upds')
+                        sleep(0.1)
+    else:
+        for name in os.listdir(in_fld):
+            img = cv2.imread(os.path.join(in_fld, name))
+            res_img = contr.process_image(img)
+            cv2.imshow('r', res_img)
+            cv2.waitKey(0)
 
 

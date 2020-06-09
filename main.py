@@ -8,6 +8,7 @@ import cv2
 from io import BytesIO
 from time import time, sleep
 
+# For good modularity
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), 'processor'))
 from processor.controller import Controller
@@ -44,21 +45,29 @@ def image_file_proc(update, context):
     update.message.reply_text('Please send image as photo')
 
 def image_proc(update, context):
-    print('Got image')
+    logger.info('Got image')
+
+    # Get bytearray
     arr = update.message.photo[-1].get_file(request_kwargs=Config.REQUEST_KWARGS).download_as_bytearray()
-
+    # Convert to numpy 1d array
     nparr = np.frombuffer(arr, np.uint8)
+    # Decode to imge
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    img_id = update.message.photo[1].file_unique_id
-    print(f'image shape {str(img.shape)} image id {img_id}')
 
+    img_id = update.message.photo[1].file_unique_id
+    logger.info(f'image shape {str(img.shape)} image id {img_id}')
+
+    # Add this image to GAN queue
     nn_contr.set_async_req(img_id, img)
 
+    # Naive timeout realisation. Could be better ))
     t_start = time()
     while time() - t_start < Config.RESP_TIMEOUT_SEC:
         resp = nn_contr.get_asyc_resp(img_id)
         if resp is not None:
+            # If image is processed encode it
             _, sendval = cv2.imencode('.jpg', resp)
+            # Wrap to file io and send
             update.message.reply_photo(BytesIO(sendval.tobytes()))
             break
         else:
@@ -68,10 +77,11 @@ def image_proc(update, context):
 
 def error(update, context):
     """Log Errors caused by Updates."""
-    logger.warning('Update "%s" caused error "%s"', update, context.error)
+    logger.warning(f'Update {update} caused error {context.error}')
 
 
 def main():
+    # Basic bot main func
     updater = Updater(Config.TOKEN, request_kwargs=Config.REQUEST_KWARGS, use_context=True)
 
     # Get the dispatcher to register handlers
