@@ -1,0 +1,28 @@
+## Base
+# Neural nets
+*.h5
+*.pt
+*.pth
+*.pth.tar
+*.weights
+
+# python cache
+*.pyc
+*__pycache__*
+
+# Venv + Pycharm
+venv/
+env/
+.idea/
+
+# Media
+*.mp4
+*.avi
+*.jpg
+*.png
+
+## Custom
+# Server cfg
+config.py
+
+
