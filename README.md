@@ -38,3 +38,4 @@ Simple part
 ```sh
 python3 main.py
 ```
+Now got to your telegram bot chat and send photo. 
