@@ -20,9 +20,9 @@ sudo chmod +x get_weights.sh
 ```
 
 ## Credentials
-Creqte config file 
+Open config file 
 ```sh
-touch config.py
+nano config.py
 ```
 And fill your bot token and your proxy
 ```python
